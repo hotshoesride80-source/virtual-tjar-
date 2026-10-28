@@ -1,0 +1,349 @@
+<style>
+#v13{background:#142838;border:1px solid #3a5364;border-radius:18px;padding:18px;margin:18px 0;color:#eef8f9}#v13 h2{font-size:23px;margin:0 0 8px}#v13 .hint{color:#b7c8d1;font-size:13px;line-height:1.6}#v13 .stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin:14px 0}#v13 .stat{border:1px solid #365466;border-radius:12px;padding:12px;min-width:0}#v13 .stat span{display:block;color:#b9cbd2;font-size:12px}#v13 .stat b{display:block;color:#51d2a1;font-size:21px;margin-top:6px}#v13 .bar{height:13px;background:#354956;border-radius:8px;overflow:hidden}#v13 .bar>div{height:100%;background:#51d2a1}#v13 input{background:#f7fafb;color:#162633;border-radius:6px;padding:9px;max-width:100%;width:140px;font-size:16px}#v13 .daily{display:grid;gap:9px;margin-top:12px}#v13 .daily>div{padding:10px;border:1px solid #344e60;border-radius:10px}#v13 .daily strong{display:block;margin-bottom:6px}#v13 .mini{height:7px;background:#354956;border-radius:6px;overflow:hidden;margin-top:6px}#v13 .mini div{height:100%;background:#51d2a1}#v13 .note{font-size:13px;color:#bfd0d8;line-height:1.6}#v13 .comparison{margin:12px 0;padding:12px;border:1px solid #355064;border-radius:10px}#v13 .comparison label{display:block;margin:8px 0}
+</style><!doctype html><html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Virtual TJAR | Virtual TJAR v1.3</title><style>
+.batch-item{display:flex;justify-content:space-between;gap:10px;align-items:center;border:1px solid #385164;border-radius:10px;padding:12px;margin:8px 0;background:#122638;flex-wrap:wrap}.batch-item small{color:#b8c8d2}.batch-item strong{color:#f2f8fa}.batch-status{font-weight:700}.batch-ok{color:#53d1a0}.batch-dup{color:#f1c477}.batch-bad{color:#ff9a9a}#batchList{max-height:420px;overflow:auto}#batchSummary{line-height:1.6}
+</style><style>
+.v10-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.v10-stat{background:#122638;border:1px solid #385164;border-radius:12px;padding:13px}.v10-stat b{display:block;font-size:23px;color:#52d4a3}.v10-stat span{font-size:12px;color:#c0cbd4}.v10-table{width:100%;border-collapse:collapse;font-size:13px}.v10-table th,.v10-table td{border-bottom:1px solid #385164;padding:9px 4px;text-align:left}.v10-table td:last-child{text-align:right}.v10-bar{height:11px;background:#344553;border-radius:20px;overflow:hidden}.v10-bar>i{display:block;height:100%;background:#52d4a3}.v10-note{font-size:12px;color:#c0cbd4}.v10-scroll{max-height:300px;overflow:auto}.v10-chart{width:100%;height:125px;display:block}.v10-chart rect{fill:#52d4a3}.v10-chart text{fill:#b5c2cf;font-size:10px}
+.v12-panel{border-top:1px solid #385164;margin-top:24px;padding-top:8px}.v12-panel h3{font-size:19px;margin-top:24px}.v12-panel svg polyline{fill:none;stroke:#52d4a3;stroke-width:3}.v12-panel svg circle{fill:#52d4a3}.v12-panel svg text{fill:#b5c2cf;font-size:10px}.v12-row{border-bottom:1px solid #385164;padding:8px 0;font-size:14px}
+</style><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoa+f4kGStFj7U=" crossorigin=""><script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script><style>body{font-family:system-ui,sans-serif;background:#0e1721;color:#f5f7fa;margin:0;padding:20px;line-height:1.6}main{max-width:650px;margin:auto}h1{font-size:25px}.card{background:#1d2b39;padding:20px;border-radius:15px;margin:16px 0}input,button{font:inherit}input[type=file]{width:100%}button{background:#52d4a3;border:0;border-radius:8px;padding:10px 15px;font-weight:bold}small,.muted{color:#b5c2cf}strong{font-size:22px}progress{width:100%;height:18px;accent-color:#52d4a3}li{margin:7px 0}.err{color:#ffb6b6}.mapwrap{background:#111e2b;border-radius:12px;padding:10px}.mapwrap svg{width:100%;height:auto}.maplabel{fill:#cbd7e4;font-size:12px}.marker{fill:#52d4a3;stroke:white;stroke-width:3}.mapnote{font-size:12px;color:#b5c2cf}.buttonrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}#geoMap{height:380px;border-radius:12px;background:#16283a;z-index:0}.geoFallback{padding:18px;border:1px solid #6d8295;border-radius:10px}.routeLegend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px}.routeLegend span::before{content:"● ";color:#52d4a3}.routeLegend span:nth-child(2)::before{color:#93a5b6}.mapControls{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}.geoNotice{font-size:12px;color:#c0cbd4}button:focus-visible{outline:3px solid white} .leaflet-container{font-family:system-ui,sans-serif} 
+/* Leaflet positioning fallback: protects Android Chrome when CDN CSS is blocked. */
+#geoMap{position:relative;overflow:hidden;touch-action:pan-x pan-y;isolation:isolate}
+#geoMap .leaflet-pane,#geoMap .leaflet-tile,#geoMap .leaflet-marker-icon,#geoMap .leaflet-marker-shadow,#geoMap .leaflet-tile-container,#geoMap .leaflet-pane>svg,#geoMap .leaflet-pane>canvas,#geoMap .leaflet-zoom-box,#geoMap .leaflet-image-layer{position:absolute;left:0;top:0}
+#geoMap .leaflet-map-pane,#geoMap .leaflet-tile-pane,#geoMap .leaflet-overlay-pane,#geoMap .leaflet-shadow-pane,#geoMap .leaflet-marker-pane,#geoMap .leaflet-tooltip-pane,#geoMap .leaflet-popup-pane{position:absolute;left:0;top:0}
+#geoMap .leaflet-tile{width:256px;height:256px;max-width:none!important;max-height:none!important;visibility:inherit}
+#geoMap .leaflet-container{overflow:hidden}
+#geoMap .leaflet-zoom-animated{transform-origin:0 0}
+#geoMap .leaflet-tile-container{pointer-events:none}
+#geoMap .leaflet-overlay-pane svg{max-width:none!important;max-height:none!important}
+#geoMap .leaflet-control-container{position:relative;z-index:1000}
+#geoMap .leaflet-top,#geoMap .leaflet-bottom{position:absolute;z-index:1000;pointer-events:none}
+#geoMap .leaflet-top{top:0}#geoMap .leaflet-bottom{bottom:0}#geoMap .leaflet-left{left:0}#geoMap .leaflet-right{right:0}
+#geoMap .leaflet-control{position:relative;z-index:800;pointer-events:auto;float:left;clear:both}
+#geoMap .leaflet-control-attribution{background:rgba(255,255,255,.85);color:#222;font-size:10px;padding:2px 5px}
+#geoMap .leaflet-control-attribution a{color:#075b9d}
+#geoMap .leaflet-control-zoom{background:white;border-radius:5px;overflow:hidden}
+#geoMap .leaflet-control-zoom a{display:block;width:30px;height:30px;text-align:center;line-height:30px;color:#222;text-decoration:none;font-weight:bold;border-bottom:1px solid #ccc}
+#geoMap .leaflet-control-container .leaflet-bottom.leaflet-right{right:0}
+#geoMap .leaflet-control-container .leaflet-top.leaflet-left{left:0}
+
+/* v0.3.2: restore Leaflet pane stacking even if external CSS fails to load. */
+#geoMap .leaflet-map-pane{z-index:1}
+#geoMap .leaflet-tile-pane{z-index:200}
+#geoMap .leaflet-overlay-pane{z-index:400;pointer-events:none}
+#geoMap .leaflet-shadow-pane{z-index:500}
+#geoMap .leaflet-marker-pane{z-index:600}
+#geoMap .leaflet-tooltip-pane{z-index:650}
+#geoMap .leaflet-popup-pane{z-index:700}
+#geoMap .leaflet-overlay-pane svg{position:absolute;overflow:visible;pointer-events:auto;z-index:400}
+#geoMap .leaflet-overlay-pane path{fill:none;stroke-opacity:1}
+#geoMap .leaflet-control-container{position:relative;z-index:1000}
+#geoMap .leaflet-pane{pointer-events:none}
+#geoMap .leaflet-overlay-pane{pointer-events:auto}
+
+.cpList{display:grid;gap:9px;margin:12px 0}.cpItem{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:9px;align-items:center;background:#142331;border:1px solid #34495c;border-radius:10px;padding:12px}.cpDot{border:2px solid #8ea2b5;border-radius:50%;width:23px;height:23px;display:grid;place-items:center;font-size:12px}.cpItem.passed .cpDot{background:#52d4a3;color:#0e1721;border-color:#52d4a3}.cpItem.next{border-color:#52d4a3}.cpName{font-weight:650}.cpMeta{font-size:12px;color:#b5c2cf}.cpStatus{font-size:12px;text-align:right;white-space:nowrap}.cpSummary{padding:12px;background:#102b2c;border-radius:10px}.cpWarning{font-size:12px;color:#ffdda1} 
+</style><main><h1>⛰ Virtual TJAR <small>v0.8</small></h1><p class="muted">個人専用・Garmin FIT取込試作版</p><div class="card"><h2>① Garminデータを読み込む</h2><input id="file" type="file" accept=".fit,.zip"><p><small>Garmin Connectの「ファイルのエクスポート」で取得したZIP、または展開したFITに対応。解析は端末内で実行し、外部へ送信しません。</small></p><div id="status">ファイルを選択してください。</div></div><div class="card"><h2>② 取得した運動記録</h2><div id="metrics">未読込</div></div><div class="card"><h2>③ バーチャル踏破</h2><label>仮の目標距離（km） <input id="goal" type="number" value="415" min="1" step="0.1" style="width:90px"></label><p><progress id="progress" value="0" max="100"></progress></p><div id="result">0%</div><small>415kmは公式に案内される概算総距離です。仮想CP間の配分は非公式です。実レースの距離・累積標高・所要時間を単純に同一視しません。</small></div><div class="card"><h2>④ 仮想コースマップ <small>v0.2</small></h2><p class="muted">早月川河口 → 北アルプス → 中央アルプス → 南アルプス → 大浜海岸</p><div class="mapwrap"><svg viewBox="0 0 340 300" role="img" aria-label="仮想TJARの進捗を示す概念図。実際のGPSコースではありません"><path id="routeBase" d="M46 32 C92 38 66 75 111 96 S181 127 150 164 S206 210 284 268" fill="none" stroke="#526372" stroke-width="7" stroke-linecap="round"/><path id="routeDone" d="M46 32 C92 38 66 75 111 96 S181 127 150 164 S206 210 284 268" fill="none" stroke="#52d4a3" stroke-width="7" stroke-linecap="round"/><circle id="currentDot" class="marker" cx="46" cy="32" r="9"/><text x="60" y="25" class="maplabel">富山湾（スタート）</text><text x="115" y="83" class="maplabel">北アルプス</text><text x="18" y="168" class="maplabel">中央アルプス</text><text x="177" y="219" class="maplabel">南アルプス</text><text x="235" y="292" class="maplabel">駿河湾（ゴール）</text></svg></div><p id="mapstatus" aria-live="polite"></p><p class="mapnote">※地形・ルート形状・各山域の位置は説明用の模式図です。マーカーは総距離の割合で移動します。各山域の距離や通過判定は未設定であり、実際の現在地を示すものではありません。</p></div><div class="card"><h2>⑤ 日本地図で見る仮想TJAR <small>v0.5</small></h2><p class="muted">実際の地図上に参考地点を配置します。公式ルート・公式チェックポイントではありません。</p><div id="geoMap" role="region" aria-label="参考地点を結ぶ日本地図"></div><p id="geoFallback" class="geoFallback" hidden>地図を読み込めませんでした。通信環境をご確認ください。従来の模式図と踏破率は引き続き利用できます。</p><div class="mapControls"><button type="button" id="fitRoute">全体を表示</button><button type="button" id="focusCurrent">仮想現在地へ</button></div><div class="routeLegend"><span>仮想進捗</span><span>残り参考線</span></div><p id="geoProgress" aria-live="polite"></p><p id="geoSegment" class="muted"></p><p class="geoNotice">※GPX未読込時の地点は山域・沿岸の参考座標で、線は各地点を直線で結んだものです。実際の登山道やTJARコース、通過位置を示しません。距離配分も参考線の長さによるもので、公式の区間距離ではありません。地図タイル取得時には地図提供者へ通信が発生します。FIT・保存記録は送信しません。</p><p class="geoNotice">地図データ © OpenStreetMap contributors（ODbL）</p></div><div class="card" id="checkpointPanel"><h2>⑥ TJAR2026 通過地点リスト <small>v0.5</small></h2><p class="cpWarning">2026年大会の通過地点名称・順序を参考資料に基づき掲載。通過距離は全区間を均等に仮配分した動作確認値です。公式の距離・実際の通過判定ではありません。</p><div id="cpSummary" class="cpSummary" aria-live="polite"></div><div id="cpList" class="cpList"></div><small>通過地点の仮想距離は総距離を区間数で均等配分しています。実際の登山道距離・標高差・公式通過記録とは一致しません。地点名は二次資料に基づき、2026年大会の公式要項との最終照合が必要です。</small></div><section class="card" id="routeImport"><h2>⑦ GPXルート取込・自動復元（v0.8）</h2><p>GPXファイルを読み込むと、<b>そのトラック形状に沿って</b>仮想現在地を表示します。ファイルは端末内で解析し、サーバーには送信しません。</p><p class="geoNotice">公式コースのGPXを本アプリに同梱していません。IBUKI公開トラックは参考資料であり、公式大会の約415kmと距離定義が異なります。利用可能な権利・条件を確認したGPXのみ読み込んでください。</p><label for="courseGPX">コースGPX（.gpx）を選択</label><input id="courseGPX" type="file" accept=".gpx,application/gpx+xml,text/xml"><p id="courseStatus" aria-live="polite">未読込（現在は従来の参考直線ルート）</p><div class="buttonrow"><button id="courseRemove" type="button">参考ルートに戻す</button><button id="courseFit" type="button">GPX全体を表示</button></div><p id="courseMetrics" class="geoNotice"></p><p id="routeStorage" class="geoNotice" aria-live="polite">保存済みGPXを確認しています…</p><div class="buttonrow"><button type="button" id="routeExport">保存GPXをバックアップ</button><button type="button" id="routeForget">保存GPXを削除</button></div><p class="geoNotice">仮想ゴールは415km（初期値）を使用します。GPXの実測距離は地図上の位置を比例換算するためだけに使用します。GPS標高の累積上昇はノイズの影響が大きく、参考値です。GPXを選択しても運動記録・バックアップは削除しません。GPXはこのブラウザのIndexedDBに端末内保存し、次回の起動時に自動復元します。ブラウザのサイトデータ削除やシークレットモードでは失われることがあります。チェックポイントの距離は暫定の均等配分です。</p></section><section class="card" id="batchPanel"><h2>⑧ Garmin FITをまとめて追加（v0.9）</h2><p>複数のFITファイルを一度に選択し、内容を確認してから保存します。既存記録と同じ活動は登録しません。<strong>選択しただけでは記録に加算されません。</strong></p><label for="batchFiles">FITファイルを複数選択</label><input id="batchFiles" type="file" accept=".fit,application/octet-stream" multiple><p id="batchSummary" aria-live="polite">まだファイルが選択されていません。</p><div id="batchList" aria-live="polite"></div><div class="buttonrow"><button type="button" id="batchCommit" disabled>新規記録をまとめて保存</button><button type="button" id="batchReset">選択を取り消す</button></div><small>FITのみ対応（ZIPは従来の単独取込を使用）。一度に最大50ファイル・各20MBまで。重複判定は活動開始・終了時刻、距離、記録点数によるもので、すべてのケースを完全には識別できません。保存前に必ず内容をご確認ください。</small></section><section class="card" id="dashboard10"><h2>⑨ 運動ダッシュボード（v1.1）</h2>
+<p class="v10-note">保存済みFITのみ集計します。未保存の選択ファイルは含みません。新規FITは記録点の時刻と距離を日本時間で日別集計します。過去の保存記録に日別内訳がない場合、開始日へ一括計上しません。</p>
+<div class="v10-grid"><div class="v10-stat"><span>保存済み総距離</span><b id="v10Total">—</b></div><div class="v10-stat"><span>415km達成率</span><b id="v10Pct">—</b></div><div class="v10-stat"><span>登録活動数</span><b id="v10Count">—</b></div><div class="v10-stat"><span>残り距離</span><b id="v10Remain">—</b></div></div>
+<p class="v10-note">既存の長時間レース記録を日別に分割するには、元のFITを下から選択して再解析してください。距離を二重加算せず、日別内訳のみ更新します。</p><label>既存FITの日別内訳を再解析 <input type="file" id="v11Reparse" accept=".fit"></label><p class="v10-note" id="v11ReparseStatus">未実行</p><section class="v12-panel"><h3>累積走行距離の推移（v1.2）</h3><p class="v10-note">日別内訳のある記録のみ日付順に積算します。未解析の活動はグラフから除外し、総距離には含めます。</p><div id="v12Cumulative" aria-live="polite"></div><svg id="v12CumulativeChart" viewBox="0 0 330 150" role="img" aria-label="日別累積走行距離の推移" style="width:100%;height:160px"></svg><h3>日別累積上昇（参考値・v1.2.2）</h3><p class="v10-note">FITの時刻・標高サンプルを再解析した場合のみ表示。GPS標高ノイズの影響を受ける参考値で、公式の累積標高ではありません。</p><div id="v12Ascent"></div><h3>チェックポイント到達日（推定）</h3><p class="v10-note">暫定CP距離と日末累積走行距離の比較です。時刻・実際の通過は判定できません。</p><div id="v12CP"></div></section><h3>最近の活動（保存済み）</h3><div id="v10Activities" class="v10-scroll"></div>
+<h3>日別走行距離（直近の記録日から最大14日）</h3><div id="v10Days" class="v10-scroll"></div><svg id="v10Chart" class="v10-chart" viewBox="0 0 330 125" role="img" aria-label="日別走行距離の棒グラフ"></svg>
+<h3>参考チェックポイント</h3><p id="v10Cp" class="v10-note"></p>
+<p class="v10-note">チェックポイントの距離は仮配分です。GPXと公式CPの対応付けは未検証です。</p>
+<div class="buttonrow"><button type="button" id="v10Export">活動一覧をCSVで保存</button><button type="button" id="v10Refresh">表示を更新</button></div>
+<p class="v10-note">既存の「記録をバックアップ」と「保存GPXをバックアップ」は引き続き別々に利用してください。ブラウザデータ削除前には両方のバックアップを推奨します。</p>
+</section><section id="v13"><h2>⑪ 統合ダッシュボード（v1.3）</h2><p class="hint">保存済みのGarmin活動から集計。415kmは仮想目標、チェックポイントは暫定配分です。</p><div class="stats"><div class="stat"><span>累積距離</span><b id="v13km">—</b></div><div class="stat"><span>踏破率</span><b id="v13pct">—</b></div><div class="stat"><span>残り距離</span><b id="v13remain">—</b></div><div class="stat"><span>FITからの累積上昇（参考）</span><b id="v13asc">—</b></div></div><div class="bar"><div id="v13progress" style="width:0%"></div></div><p id="v13cp" class="note"></p><h3>日別の距離・上昇量</h3><div id="v13days" class="daily"></div><div class="comparison"><h3>Garmin Connectとの比較（任意）</h3><label>Garmin Connect 総上昇量（m） <input id="v13garmin" type="number" min="0" step="1" placeholder="例：9756"></label><p id="v13diff" class="note"></p><p class="hint">入力した基準値はこのブラウザ内に保存します。Garminの値を自動取得する機能ではありません。</p></div><p class="note">日別内訳は元FITの再解析後に表示されます。上昇量はGPS標高の差分からの参考値で、Garmin Connectと一致する保証はありません。活動データとGPXのバックアップは従来のボタンから別々に行ってください。</p></section><div class="card"><h2>⑩ 記録の管理</h2><button id="save" disabled>この記録を端末に保存</button> <button id="clear">保存記録を削除</button><div id="history"></div><div class="buttonrow"><button id="backup">記録をバックアップ</button><button id="restoreButton">バックアップを復元</button><input id="restoreFile" type="file" accept=".json,application/json" hidden></div><small>同じFITの二重登録を防ぎます。端末のブラウザデータを消すと記録も失われます。</small></div></main><script>
+const $=x=>document.getElementById(x);let pending=null;const key='virtual_tjar_fit_v1';let history=JSON.parse(localStorage.getItem(key)||'[]');
+function val(d,p,t){if(p+({0:1,1:1,2:1,10:1,13:1,131:1,132:2,133:4,134:8,136:4,137:8,139:2,140:4,142:8,7:1,8:2,9:4}[t&31]||1)>d.byteLength)return null;let v=new DataView(d.buffer,d.byteOffset,d.byteLength),b=t&31;switch(b){case 0:case 2:case 10:case 13:return v.getUint8(p);case 1:return v.getInt8(p);case 3:return v.getInt16(p,true);case 4:return v.getUint16(p,true);case 5:return v.getInt32(p,true);case 6:return v.getUint32(p,true);case 8:return v.getFloat32(p,true);case 9:return v.getFloat64(p,true);default:return null}}
+// Split each record-to-record distance increment at JST midnight by time interpolation.
+// A missing or discontinuous distance stream is marked incomplete, never invented.
+function fitDailySplit(samples,total){
+ if(samples.length<2||!Number.isFinite(total))return null;
+ const date=t=>new Date((t+631065600)*1000+9*3600000).toISOString().slice(0,10);
+ const days={};let covered=0,valid=0;
+ for(let i=1;i<samples.length;i++){
+  const [t0,d0]=samples[i-1],[t1,d1]=samples[i],delta=d1-d0;
+  if(t1<=t0||delta<0||delta>100||t1-t0>21600)continue;
+  valid++;covered+=delta;let cursor=t0;
+  while(cursor<t1){const boundary=(Math.floor((cursor+32400)/86400)+1)*86400-32400;const stop=Math.min(t1,boundary);const amount=delta*(stop-cursor)/(t1-t0);const day=date(cursor);days[day]=(days[day]||0)+amount;cursor=stop}
+ }
+ // Difference between session distance and record deltas is not silently allocated.
+ if(valid<1||covered<=0||Math.abs(total-covered)>Math.max(0.5,total*0.02))return null;
+ const scale=total/covered;for(const day in days)days[day]=Math.round(days[day]*scale*100000)/100000;
+ return days;
+}
+function parseFIT(a){let d=new Uint8Array(a),v=new DataView(a);if(d.length<14||String.fromCharCode(...d.slice(8,12))!=='.FIT')throw Error('FIT形式ではありません');let h=d[0],end=Math.min(d.length,h+v.getUint32(4,true)),defs={},sessions=[],records=0,first=null,last=null;let samples=[];let pos=h;while(pos<end){let head=d[pos++],local=(head&0x80)?((head>>5)&3):(head&15);if(!(head&0x80)&&(head&0x40)){let arch=d[pos+1],little=arch===0,global=v.getUint16(pos+2,little),count=d[pos+4];pos+=5;let fields=[];for(let j=0;j<count;j++){fields.push({n:d[pos],size:d[pos+1],type:d[pos+2]});pos+=3}if(head&0x20){let dev=d[pos++];pos+=dev*3}defs[local]={global,fields,little};continue}let def=defs[local];if(!def)throw Error('FITの定義が不足しています');let obj={};for(let f of def.fields){let raw=d.subarray(pos,pos+f.size);if(raw.length<f.size)throw Error('FITデータが途中で切れています');let view=new DataView(raw.buffer,raw.byteOffset,raw.byteLength);let b=f.type&31,n=null;try{if(f.size===1)n=(b===1?view.getInt8(0):view.getUint8(0));else if(f.size===2)n=b===3?view.getInt16(0,def.little):view.getUint16(0,def.little);else if(f.size===4)n=b===8?view.getFloat32(0,def.little):b===5?view.getInt32(0,def.little):view.getUint32(0,def.little);else if(f.size===8&&b===9)n=view.getFloat64(0,def.little)}catch{}if(n!==null)obj[f.n]=n;pos+=f.size}if(def.global===18)sessions.push(obj);if(def.global===20){records++;if(obj[253]!=null){first=first===null?obj[253]:first;last=obj[253];if(Number.isFinite(obj[5])&&obj[5]>=0)samples.push([obj[253],obj[5]/100000])}}}let s=sessions.sort((a,b)=>(b[9]||0)-(a[9]||0))[0]||{};let distance=s[9]!=null?s[9]/100000:null,elapsed=s[7]!=null?s[7]/1000:null,moving=s[8]!=null?s[8]/1000:null,ascent=s[22]!=null?s[22]:null,descent=s[23]!=null?s[23]:null,hr=s[16]!=null?s[16]:null;return {distance,elapsed,moving,ascent,descent,hr,records,sessions:sessions.length,first,last,dailyBreakdown:fitDailySplit(samples,distance)}}
+async function unzip(ab){let d=new DataView(ab),u=new Uint8Array(ab),p=0;while(p+30<=u.length){if(d.getUint32(p,true)!==0x04034b50)break;let flags=d.getUint16(p+6,true),method=d.getUint16(p+8,true),compressed=d.getUint32(p+18,true),nameLen=d.getUint16(p+26,true),extra=d.getUint16(p+28,true),name=new TextDecoder().decode(u.slice(p+30,p+30+nameLen)),start=p+30+nameLen+extra;if(flags&8)throw Error('このZIPはAndroidのファイルアプリで展開してFITを選択してください');if(name.toLowerCase().endsWith('.fit')){let bytes=u.slice(start,start+compressed);if(method===0)return bytes.buffer;if(method===8){try{let stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));return await new Response(stream).arrayBuffer()}catch{throw Error('ZIPを展開してFITファイルを選択してください（このブラウザはZIP解凍に非対応）')}}throw Error('未対応のZIP圧縮方式です')}p=start+compressed}throw Error('ZIP内にFITファイルが見つかりません')}
+function formatSec(s){if(s==null)return '取得できません';let h=Math.floor(s/3600),m=Math.floor(s%3600/60),ss=Math.floor(s%60);return `${h}時間${m}分${ss}秒`}
+function show(){let all=[...history,...(pending&&!history.some(x=>x.id===pending.id)?[pending]:[])],sum=all.reduce((a,x)=>a+(x.distance||0),0),goal=Number($('goal').value)||415,pct=Math.min(100,sum/goal*100);$('progress').value=pct;let route=$('routeBase'),done=$('routeDone'),dot=$('currentDot'),length=route.getTotalLength(),ratio=Math.max(0,Math.min(1,sum/goal)),pt=route.getPointAtLength(length*ratio);done.style.strokeDasharray=`${length*ratio} ${length}`;dot.setAttribute('cx',pt.x);dot.setAttribute('cy',pt.y);$('mapstatus').textContent=`仮想進捗 ${Math.min(sum,goal).toFixed(2)} / ${goal} km（${pct.toFixed(1)}%）`; $('result').textContent=`${sum.toFixed(2)} km / ${goal} km（${pct.toFixed(1)}%）`;if(typeof updateGeo==='function')updateGeo(sum,goal);if(typeof updateCourse==='function')updateCourse(sum);if(typeof renderCheckpoints==='function')renderCheckpoints(sum,goal);$('history').innerHTML=history.length?'<h3>保存済み</h3><ul>'+history.map(x=>`<li>${x.name.replace(/[<>&]/g,'')}：${x.distance?.toFixed(2)??'不明'} km</li>`).join('')+'</ul>':'<p class="muted">保存記録なし</p>'}
+$('file').onchange=async e=>{let f=e.target.files[0];if(!f)return;$('status').textContent='解析中…';try{let ab=await f.arrayBuffer();if(f.name.toLowerCase().endsWith('.zip'))ab=await unzip(ab);let r=parseFIT(ab);let id=`${r.first}-${r.last}-${r.distance}-${r.records}`;pending={...r,id,name:f.name};$('metrics').innerHTML=`<p>距離：<strong>${r.distance?.toFixed(2)??'不明'} km</strong></p><p>経過時間：${formatSec(r.elapsed)}</p><p>移動時間：${formatSec(r.moving)}</p><p>累積上昇：${r.ascent??'取得できません'} m</p><p>累積下降：${r.descent??'取得できません'} m</p><p>平均心拍：${r.hr??'取得できません'} bpm</p><p>記録ポイント：${r.records} 件</p>`;$('status').textContent='FITの解析が完了しました。';$('save').disabled=history.some(x=>x.id===id);show()}catch(err){pending=null;$('save').disabled=true;$('status').innerHTML='<span class="err">'+err.message+'</span>';show()}};
+$('save').onclick=()=>{if(!pending||history.some(x=>x.id===pending.id))return;history.push(pending);localStorage.setItem(key,JSON.stringify(history));pending=null;$('save').disabled=true;show()};$('clear').onclick=()=>{if(!confirm('保存した全記録を削除しますか？'))return;history=[];pending=null;localStorage.removeItem(key);$('save').disabled=true;show()};$('backup').onclick=()=>{const payload={app:'virtual-tjar',version:2,createdAt:new Date().toISOString(),goal:Number($('goal').value)||415,records:history};const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='virtual-tjar-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)};
+$('restoreButton').onclick=()=>$('restoreFile').click();$('restoreFile').onchange=async e=>{try{const f=e.target.files[0];if(!f)return;const data=JSON.parse(await f.text());if(data.app!=='virtual-tjar'||!Array.isArray(data.records)||data.records.length>10000)throw Error('対応するバックアップではありません');const clean=data.records.map(x=>{if(typeof x.id!=='string'||typeof x.name!=='string'||!Number.isFinite(x.distance)||x.distance<0||x.distance>10000)throw Error('記録データが不正です');return {id:x.id.slice(0,200),name:x.name.slice(0,200),distance:x.distance,elapsed:x.elapsed,moving:x.moving,ascent:x.ascent,descent:x.descent,hr:x.hr,records:x.records,first:x.first,last:x.last,dailyBreakdown:(x.dailyBreakdown&&typeof x.dailyBreakdown==='object'&&!Array.isArray(x.dailyBreakdown))?Object.fromEntries(Object.entries(x.dailyBreakdown).filter(([d,v])=>/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(v)&&v>=0)):null}});const map=new Map(history.map(x=>[x.id,x]));clean.forEach(x=>map.set(x.id,x));if(!confirm(`${clean.length}件の記録を復元・統合しますか？`))return;history=[...map.values()];localStorage.setItem(key,JSON.stringify(history));if(Number.isFinite(data.goal)&&data.goal>0)$('goal').value=data.goal;pending=null;$('save').disabled=true;show();alert('復元しました')}catch(err){alert('復元できません：'+err.message)}finally{e.target.value=''}};
+
+// v0.3 reference geographic overview. These are NOT official TJAR route/CP coordinates.
+const geoStops=[
+ {name:'富山湾沿岸（参考スタート）',lat:36.820,lon:137.390},
+ {name:'北アルプス山域（参考）',lat:36.470,lon:137.640},
+ {name:'中央アルプス山域（参考）',lat:35.790,lon:137.810},
+ {name:'南アルプス山域（参考）',lat:35.500,lon:138.170},
+ {name:'駿河湾沿岸（参考ゴール）',lat:34.960,lon:138.400}
+];
+let geoMap=null,geoDone=null,geoRemain=null,geoMarker=null,geoReady=false;
+const geoCoords=geoStops.map(p=>[p.lat,p.lon]);
+function geoHaversine(a,b){const rad=Math.PI/180,R=6371,dl=(b[0]-a[0])*rad,do_=(b[1]-a[1])*rad,x=Math.sin(dl/2)**2+Math.cos(a[0]*rad)*Math.cos(b[0]*rad)*Math.sin(do_/2)**2;return 2*R*Math.atan2(Math.sqrt(x),Math.sqrt(1-x))}
+const geoLens=geoCoords.slice(1).map((p,i)=>geoHaversine(geoCoords[i],p));
+const geoTotal=geoLens.reduce((a,b)=>a+b,0);
+const cpFractions=[0];let cpRunning=0;for(const length of geoLens){cpRunning+=length;cpFractions.push(cpRunning/geoTotal)}
+const tjarMilestones=["早月川河口（スタート）", "馬場島", "剱岳", "立山（大汝山）", "五色ヶ原", "薬師岳", "太郎平小屋", "黒部五郎小舎", "双六小屋", "槍ヶ岳山荘", "上高地", "奈川渡ダム", "境峠", "薮原駅", "旧木曽駒高原スキー場", "木曽駒ヶ岳", "空木岳", "駒ヶ根高原", "市野瀬", "仙丈ヶ岳", "塩見岳", "三伏峠", "荒川岳（前岳）", "赤石岳", "聖岳", "茶臼小屋", "井川オートキャンプ場", "井川ダム", "富士見峠", "静岡駅", "大浜海岸（ゴール）"];
+// Official-style place names/order; all cumulative distances below are explicitly synthetic.
+// Equal division is NOT a race route or official distance. A verified segment-distance dataset can replace this array.
+const milestoneFractions=tjarMilestones.map((_,i)=>i/(tjarMilestones.length-1));
+function renderCheckpoints(sum,goal){
+ const ratio=Math.max(0,Math.min(1,sum/goal));
+ const reached=milestoneFractions.filter(f=>f<=ratio+1e-10).length;
+ const nextIndex=milestoneFractions.findIndex((f,i)=>i>0&&f>ratio+1e-10);
+ const complete=ratio>=1;const next=complete?-1:nextIndex;
+ const km=next<0?0:Math.max(0,milestoneFractions[next]*goal-sum);
+ $('cpSummary').textContent=complete?`${reached}/${tjarMilestones.length}地点・仮想ゴール`:`${reached}/${tjarMilestones.length}地点・次：${tjarMilestones[next]}｜仮想残り ${km.toFixed(2)} km`;
+ const frag=document.createDocumentFragment();
+ tjarMilestones.forEach((name,i)=>{
+  const passed=milestoneFractions[i]<=ratio+1e-10,isNext=i===next;
+  const el=document.createElement('div');el.className='cpItem '+(passed?'passed':isNext?'next':'');
+  const dot=document.createElement('span');dot.className='cpDot';dot.textContent=passed?'✓':String(i+1);
+  const info=document.createElement('div');const title=document.createElement('div');title.className='cpName';title.textContent=name;
+  const sub=document.createElement('div');sub.className='cpMeta';sub.textContent=`仮想累積 ${(milestoneFractions[i]*goal).toFixed(1)} km（均等配分・非公式）`;
+  info.append(title,sub);const status=document.createElement('div');status.className='cpStatus';status.textContent=passed?'仮通過':isNext?'次の地点':'未到達';
+  el.append(dot,info,status);frag.appendChild(el);
+ });$('cpList').replaceChildren(frag);
+}
+
+function geoPosition(r){let remaining=Math.max(0,Math.min(1,r))*geoTotal;for(let i=0;i<geoLens.length;i++){if(remaining<=geoLens[i]||i===geoLens.length-1){const t=Math.max(0,Math.min(1,remaining/geoLens[i]));return {lat:geoCoords[i][0]+(geoCoords[i+1][0]-geoCoords[i][0])*t,lon:geoCoords[i][1]+(geoCoords[i+1][1]-geoCoords[i][1])*t,segment:i,t};}remaining-=geoLens[i]}return {lat:geoCoords[4][0],lon:geoCoords[4][1],segment:3,t:1}}
+function updateGeo(sum,goal){if(courseTrack){$('geoProgress').textContent=`415km換算 ${sum.toFixed(2)} / ${goal.toFixed(2)} km（${Math.min(100,sum/goal*100).toFixed(1)}%）｜GPX実測 ${courseTrack.km.toFixed(2)}km`; $('geoSegment').textContent='GPXトラック上の比例換算位置（実際の走行位置ではありません）';return;}const r=Math.max(0,Math.min(1,sum/goal)),p=geoPosition(r);$('geoProgress').textContent=`累積 ${sum.toFixed(2)} km / ${goal.toFixed(2)} km（${(r*100).toFixed(1)}%）・残り ${Math.max(0,goal-sum).toFixed(2)} km`;$('geoSegment').textContent=`参考区間：${geoStops[p.segment].name} → ${geoStops[p.segment+1].name}（実際の通過判定ではありません）`;if(!geoReady)return;const marker=[p.lat,p.lon],done=geoCoords.slice(0,p.segment+1).concat([marker]),remain=[marker,...geoCoords.slice(p.segment+1)];geoDone.setLatLngs(done);geoRemain.setLatLngs(remain);geoMarker.setLatLng(marker);geoDone.bringToFront();geoMarker.bringToFront();geoMarker.bindPopup(`仮想進捗 ${(r*100).toFixed(1)}%<br>※公式ルート上の位置ではありません`)}
+function initGeo(){if(!window.L){$('geoFallback').hidden=false;return}try{geoMap=L.map('geoMap',{scrollWheelZoom:false}).setView([35.95,137.9],7);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',maxZoom:16}).addTo(geoMap);geoRemain=L.polyline(geoCoords,{color:'#93a5b6',weight:5,dashArray:'7 7'}).addTo(geoMap);geoDone=L.polyline([geoCoords[0]],{color:'#23b88d',weight:7,opacity:1}).addTo(geoMap);geoMarker=L.circleMarker(geoCoords[0],{radius:12,color:'#ffffff',weight:4,fillColor:'#23b88d',fillOpacity:1,pane:'overlayPane'}).addTo(geoMap);geoMarker.bringToFront();geoStops.forEach((p,i)=>L.circleMarker([p.lat,p.lon],{radius:5,color:'#d7e5ef',weight:1,fillColor:'#263a4d',fillOpacity:1}).addTo(geoMap).bindPopup(`${p.name}<br>参考地点・公式CPではありません`));geoMap.fitBounds(geoCoords,{padding:[25,25]});setTimeout(()=>geoMap.invalidateSize(true),300);geoReady=true;const total=history.reduce((a,x)=>a+(x.distance||0),0);updateGeo(total,Number($('goal').value)||415);if(courseTrack)updateCourse(total);$('fitRoute').onclick=()=>{geoMap.invalidateSize(true);geoMap.fitBounds(courseTrack?courseTrack.coords:geoCoords,{padding:[25,25]})};$('focusCurrent').onclick=()=>{const total=history.reduce((a,x)=>a+(x.distance||0),0)+(pending&&!history.some(x=>x.id===pending.id)?pending.distance||0:0),p=courseTrack?courseAt(total):geoPosition(total/(Number($('goal').value)||415));geoMap.invalidateSize(true);geoMap.setView([p.lat,p.lon],9);geoMarker.bringToFront()}}catch(e){$('geoFallback').hidden=false;}}
+window.addEventListener('load',initGeo);
+
+
+// v0.6: GPX route is parsed locally; no remote course fetch, no GPX storage.
+let courseTrack=null,courseLine=null,courseDone=null,courseRemaining=null;
+// IndexedDB stores only the route GPX. FIT records retain their existing localStorage key.
+const ROUTE_DB='virtual-tjar-route-v08',ROUTE_STORE='routes';
+function routeDB(){return new Promise((resolve,reject)=>{if(!('indexedDB' in window))return reject(Error('このブラウザはIndexedDBに対応していません'));const req=indexedDB.open(ROUTE_DB,1);req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(ROUTE_STORE))req.result.createObjectStore(ROUTE_STORE)};req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||Error('DBを開けません'))})}
+async function routeOp(mode,value){const db=await routeDB();return new Promise((resolve,reject)=>{const tx=db.transaction(ROUTE_STORE,mode==='get'?'readonly':'readwrite'),store=tx.objectStore(ROUTE_STORE);let req=mode==='get'?store.get('active'):mode==='put'?store.put(value,'active'):store.delete('active');req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);tx.oncomplete=()=>db.close();tx.onerror=()=>{db.close();reject(tx.error)}})}
+function downloadText(name,content){const blob=new Blob([content],{type:'application/gpx+xml;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),4000)}
+
+function courseAt(km){const goal=Math.max(1,Number($('goal').value)||415);if(!courseTrack)return geoPosition(km/goal);const d=Math.max(0,Math.min(km/goal,1))*courseTrack.km,cum=courseTrack.cum,pts=courseTrack.coords;let lo=0,hi=cum.length-1;while(lo<hi){let mid=(lo+hi)>>1;if(cum[mid]<d)lo=mid+1;else hi=mid;}const i=Math.max(1,lo),delta=cum[i]-cum[i-1],t=delta>0?(d-cum[i-1])/delta:0;return {lat:pts[i-1][0]+(pts[i][0]-pts[i-1][0])*t,lon:pts[i-1][1]+(pts[i][1]-pts[i-1][1])*t,index:i};}
+function updateCourse(sum){if(!courseTrack)return;const t=courseTrack,at=courseAt(sum),n=at.index;const coords=t.coords,here=[at.lat,at.lon];$('courseStatus').textContent=`GPX読込済み：${t.points}点、距離 ${t.km.toFixed(2)} km`; const goal=Math.max(1,Number($('goal').value)||415),pct=Math.min(100,sum/goal*100),mapped=Math.min(1,sum/goal)*t.km;$('courseMetrics').textContent=`仮想踏破 ${sum.toFixed(2)} / ${goal.toFixed(2)} km（${pct.toFixed(1)}%）・残り ${Math.max(0,goal-sum).toFixed(2)} km｜GPX上の換算位置 ${mapped.toFixed(2)} / ${t.km.toFixed(2)} km`+(t.up!=null?`｜累積上昇（GPS参考値）約${Math.round(t.up)}m`:'');if(!geoReady)return;geoDone.setStyle({opacity:0});geoRemain.setStyle({opacity:0});if(!courseDone){courseDone=L.polyline([],{color:'#23b88d',weight:6}).addTo(geoMap);courseRemaining=L.polyline([],{color:'#93a5b6',weight:4,dashArray:'8 7'}).addTo(geoMap);}courseDone.setLatLngs([...coords.slice(0,n),here]);courseRemaining.setLatLngs([here,...coords.slice(n)]);geoMarker.setLatLng(here).bringToFront();geoMarker.bindPopup(`仮想進捗：${sum.toFixed(2)} / ${goal.toFixed(2)}km｜GPX換算 ${mapped.toFixed(2)}km（実際の現在地ではありません）`);}
+async function loadCourseText(xmlText,filename,shouldSave){
+ if(new Blob([xmlText]).size>12*1024*1024)throw Error('12MB以下のGPXを選んでください');
+let xml=new DOMParser().parseFromString(xmlText,'application/xml');if(xml.querySelector('parsererror'))throw Error('GPXのXML形式を確認してください');let nodes=[...xml.getElementsByTagName('trkpt')];if(nodes.length<2)nodes=[...xml.getElementsByTagName('rtept')];if(nodes.length<2)throw Error('トラックポイントが2点以上必要です');if(nodes.length>100000)throw Error('10万点を超えるGPXは間引いてください');let pts=[],elev=[];for(let n of nodes){let lat=Number(n.getAttribute('lat')),lon=Number(n.getAttribute('lon'));if(!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180)continue;pts.push([lat,lon]);let el=[...n.children].find(x=>x.localName==='ele');elev.push(el&&Number.isFinite(Number(el.textContent))?Number(el.textContent):null)}if(pts.length<2)throw Error('有効な座標が不足しています');let cum=[0],up=0,validElev=0;for(let i=1;i<pts.length;i++){let step=geoHaversine(pts[i-1],pts[i]);cum.push(cum[i-1]+step);if(elev[i]!=null&&elev[i-1]!=null){validElev++;up+=Math.max(0,elev[i]-elev[i-1]);}}if(cum.at(-1)<0.1)throw Error('ルート距離が短すぎます');courseTrack={coords:pts,cum,km:cum.at(-1),points:pts.length,up:validElev?up:null};
+ $('courseStatus').textContent='GPX解析成功';
+ if(geoReady){geoMap.invalidateSize(true);geoMap.fitBounds(courseTrack.coords,{padding:[20,20]});}
+ const total=history.reduce((a,x)=>a+(x.distance||0),0)+(pending&&!history.some(x=>x.id===pending.id)?pending.distance||0:0);
+ updateCourse(total);updateGeo(total,Number($('goal').value)||415);
+ if(shouldSave){try{await routeOp('put',{name:filename,text:xmlText,savedAt:new Date().toISOString()});$('routeStorage').textContent='端末にGPXを保存しました：'+filename;}catch(err){$('routeStorage').textContent='GPXの自動保存に失敗しました。元ファイルを保持してください：'+err.message;}}
+}
+$('courseGPX').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;try{await loadCourseText(await f.text(),f.name,true)}catch(err){$('courseStatus').textContent='GPXを読み込めません：'+err.message}finally{e.target.value=''}});
+$('routeExport').onclick=async()=>{try{const saved=await routeOp('get');if(!saved?.text)throw Error('保存GPXがありません');downloadText(saved.name||'virtual-tjar-route.gpx',saved.text)}catch(e){alert('GPXを取り出せません：'+e.message)}};
+$('routeForget').onclick=async()=>{if(!confirm('端末に保存されたGPXのみ削除しますか？ Garminの記録は残ります。'))return;try{await routeOp('delete');$('routeStorage').textContent='保存GPXを削除しました（現在表示中の地図は維持されます）'}catch(e){alert('削除できません：'+e.message)}};
+async function restoreSavedRoute(){try{const saved=await routeOp('get');if(saved?.text){await loadCourseText(saved.text,saved.name||'保存GPX',false);$('routeStorage').textContent='保存GPXを自動復元しました：'+(saved.name||'名称なし')}else $('routeStorage').textContent='保存GPXなし：一度GPXを選択すると次回から自動復元します。'}catch(err){$('routeStorage').textContent='GPX自動復元に失敗しました。再選択してください：'+err.message}}
+window.addEventListener('load',()=>{setTimeout(restoreSavedRoute,350)});
+$('courseRemove').onclick=()=>{courseTrack=null;if(courseDone){geoMap.removeLayer(courseDone);geoMap.removeLayer(courseRemaining);courseDone=null;courseRemaining=null;}if(geoReady){geoDone.setStyle({opacity:1});geoRemain.setStyle({opacity:1});geoMap.fitBounds(geoCoords,{padding:[25,25]});} $('courseStatus').textContent='参考直線ルートを表示中（保存GPXは残っています）';$('courseMetrics').textContent='';show();};
+$('courseFit').onclick=()=>{if(!geoReady)return;geoMap.invalidateSize(true);geoMap.fitBounds(courseTrack?courseTrack.coords:geoCoords,{padding:[20,20]});};
+
+
+// v0.9 batch FIT importer: staged files do not count toward progress until committed.
+let batchEntries=[];
+function batchRender(){
+ const newEntries=batchEntries.filter(x=>x.state==='new'&&!history.some(y=>y.id===x.record.id));
+ const duplicates=batchEntries.filter(x=>x.state==='duplicate'||(x.state==='new'&&history.some(y=>y.id===x.record.id))).length;
+ const errors=batchEntries.filter(x=>x.state==='error').length;
+ const km=newEntries.reduce((a,x)=>a+x.record.distance,0);
+ $('batchSummary').textContent=`選択 ${batchEntries.length}件｜新規 ${newEntries.length}件（${km.toFixed(2)} km）｜重複 ${duplicates}件｜読込エラー ${errors}件。保存前の距離は進捗に加算しません。`;
+ $('batchCommit').disabled=newEntries.length===0;
+ const fragment=document.createDocumentFragment();
+ for(const item of batchEntries){
+  const row=document.createElement('div');row.className='batch-item';
+  const info=document.createElement('div');const name=document.createElement('strong');name.textContent=item.name;
+  const detail=document.createElement('div');detail.className='batch-status '+(item.state==='error'?'batch-bad':item.state==='duplicate'||(item.record&&history.some(x=>x.id===item.record.id))?'batch-dup':'batch-ok');
+  detail.textContent=item.state==='error'?`エラー：${item.error}`:item.state==='duplicate'||history.some(x=>x.id===item.record.id)?'重複・保存対象外':`新規 ${item.record.distance.toFixed(2)} km`;
+  info.append(name,detail);row.appendChild(info);fragment.appendChild(row);
+ }
+ $('batchList').replaceChildren(fragment);
+}
+$('batchFiles').addEventListener('change',async e=>{
+ const files=[...e.target.files];e.target.value='';batchEntries=[];
+ if(files.length>50){$('batchSummary').textContent='一度に選べるのは50件までです。';return;}
+ $('batchSummary').textContent=`${files.length}件を解析しています…`;
+ const seen=new Set(history.map(x=>x.id));if(pending)seen.add(pending.id);
+ for(const f of files){
+  try{
+   if(!f.name.toLowerCase().endsWith('.fit'))throw Error('FITファイルを選択してください');
+   if(f.size>20*1024*1024)throw Error('20MBを超えています');
+   const r=parseFIT(await f.arrayBuffer());
+   if(!Number.isFinite(r.distance)||r.distance<=0||r.distance>10000)throw Error('有効な走行距離がありません');
+   const id=`${r.first}-${r.last}-${r.distance}-${r.records}`;
+   const record={...r,id,name:f.name};
+   const duplicate=seen.has(id);seen.add(id);
+   batchEntries.push({name:f.name,record,state:duplicate?'duplicate':'new'});
+  }catch(err){batchEntries.push({name:f.name,state:'error',error:err.message||'不明なエラー'});}
+ }
+ batchRender();
+});
+$('batchReset').onclick=()=>{batchEntries=[];batchRender()};
+$('batchCommit').onclick=()=>{
+ const fresh=batchEntries.filter(x=>x.state==='new'&&!history.some(y=>y.id===x.record.id)).map(x=>x.record);
+ if(!fresh.length)return;
+ const km=fresh.reduce((a,x)=>a+x.distance,0);
+ if(!confirm(`${fresh.length}件（合計${km.toFixed(2)}km）を保存しますか？`))return;
+ const next=[...history,...fresh];
+ try{localStorage.setItem(key,JSON.stringify(next));history=next;batchEntries=[];batchRender();show();alert(`${fresh.length}件を保存しました。`)}
+ catch(err){alert('保存できません。ブラウザの空き容量を確認し、記録をバックアップしてください。 '+err.message)}
+};
+
+// v1.0: read-only dashboard; does not change legacy storage keys or GPX.
+function v10Date(record){
+ const n=Number(record.first??record.last);
+ if(!Number.isFinite(n)||n<100000000||n>2000000000)return null;
+ const d=new Date((n+631065600)*1000); // FIT epoch 1989-12-31 00:00 UTC
+ if(!Number.isFinite(d.getTime()))return null;
+ return new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
+}
+function v10Text(parent,tag,value){const e=document.createElement(tag);e.textContent=value;parent.appendChild(e);return e}
+function v10Render(){
+ const records=history.filter(x=>Number.isFinite(x.distance)&&x.distance>=0);
+ const sum=records.reduce((a,x)=>a+x.distance,0),goal=Math.max(1,Number($('goal').value)||415);
+ $('v10Total').textContent=sum.toFixed(2)+' km';$('v10Pct').textContent=(Math.min(100,sum/goal*100)).toFixed(1)+'%';
+ $('v10Count').textContent=String(records.length)+' 件';$('v10Remain').textContent=Math.max(0,goal-sum).toFixed(2)+' km';
+ const list=$('v10Activities');list.replaceChildren();
+ if(!records.length)v10Text(list,'p','保存済みの活動はありません。');
+ else{const t=document.createElement('table');t.className='v10-table';const header=document.createElement('tr');['日付（日本時間）','活動','距離'].forEach(x=>v10Text(header,'th',x));t.appendChild(header);
+ for(const r of [...records].sort((a,b)=>(Number(b.first)||0)-(Number(a.first)||0)).slice(0,30)){
+ const tr=document.createElement('tr');v10Text(tr,'td',v10Date(r)||'日付不明');v10Text(tr,'td',String(r.name||'FIT記録').slice(0,32));v10Text(tr,'td',r.distance.toFixed(2)+' km');t.appendChild(tr)
+ }list.appendChild(t)}
+ const grouped=new Map();let undated=0;
+ for(const r of records){if(r.dailyBreakdown&&Object.keys(r.dailyBreakdown).length){for(const [date,km] of Object.entries(r.dailyBreakdown)){if(Number.isFinite(km)&&km>=0)grouped.set(date,(grouped.get(date)||0)+km)}}else undated+=r.distance}
+ const days=[...grouped].sort((a,b)=>b[0].localeCompare(a[0])).slice(0,14);
+ const daysBox=$('v10Days');daysBox.replaceChildren();
+ if(!days.length)v10Text(daysBox,'p','日別内訳を取得できる保存済み記録はありません。元のFITを再解析すると内訳を確認できます（既存の記録は二重保存されません）。');
+ else{const max=Math.max(...days.map(x=>x[1]),1);for(const [date,km] of days){const r=document.createElement('div');r.style.margin='9px 0';v10Text(r,'div',date+'　'+km.toFixed(2)+' km');const bg=document.createElement('div');bg.className='v10-bar';const bar=document.createElement('i');bar.style.width=(100*km/max).toFixed(2)+'%';bg.appendChild(bar);r.appendChild(bg);daysBox.appendChild(r)}}
+ if(undated>0)v10Text(daysBox,'p','日別内訳未取得：'+undated.toFixed(2)+' km（総距離には含む／元FITの再解析が必要）');
+ const chart=$('v10Chart');chart.replaceChildren();const ns='http://www.w3.org/2000/svg';const seq=[...days].reverse();const max=Math.max(1,...seq.map(x=>x[1]));
+ seq.forEach(([date,km],i)=>{const w=300/Math.max(1,seq.length),bar=document.createElementNS(ns,'rect');bar.setAttribute('x',String(15+i*w+3));bar.setAttribute('y',String(100-85*km/max));bar.setAttribute('width',String(Math.max(3,w-6)));bar.setAttribute('height',String(85*km/max));chart.appendChild(bar);if(i%Math.max(1,Math.ceil(seq.length/5))===0){const label=document.createElementNS(ns,'text');label.setAttribute('x',String(15+i*w));label.setAttribute('y','118');label.textContent=date.slice(5);chart.appendChild(label)}});
+ $('v10Cp').textContent='保存済み '+sum.toFixed(2)+' / '+goal.toFixed(2)+' km（'+(100*Math.min(1,sum/goal)).toFixed(1)+'%）。CP一覧は上の暫定チェックポイント欄を参照してください。';
+}
+$('v11Reparse').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const r=parseFIT(await f.arrayBuffer());const id=`${r.first}-${r.last}-${r.distance}-${r.records}`;const existing=history.find(x=>x.id===id);if(!existing)throw Error('一致する保存済み活動がありません。新規FITは複数取込から追加してください。');if(!r.dailyBreakdown)throw Error('日別分割に必要な時刻・累積距離が不足しています。元の記録は変更していません。');existing.dailyBreakdown=r.dailyBreakdown;try{existing.dailyAscent=v12AscentFromFIT(await f.arrayBuffer())}catch(err){existing.dailyAscent=null;throw Error('標高集計：'+err.message)}localStorage.setItem(key,JSON.stringify(history));show();$('v11ReparseStatus').textContent='日別内訳と標高参考値を更新しました。走行距離の二重加算はありません。';}catch(err){$('v11ReparseStatus').textContent='再解析できません：'+err.message}finally{e.target.value=''}};
+$('v10Refresh').onclick=v10Render;
+$('v10Export').onclick=()=>{
+ const quote=x=>'"'+String(x??'').replace(/"/g,'""')+'"';
+ const rows=[['start_date_jst','file_name','distance_km','elapsed_sec','moving_sec','ascent_m','avg_hr_bpm','activity_id','daily_breakdown_json']];
+ for(const r of history)rows.push([v10Date(r)||'',r.name,r.distance,r.elapsed,r.moving,r.ascent,r.hr,r.id,JSON.stringify(r.dailyBreakdown||null)]);
+ const csv='\uFEFF'+rows.map(r=>r.map(quote).join(',')).join('\r\n');
+ const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='virtual-tjar-activities-v12.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),3000);
+};
+const v10OriginalShow=show;show=function(){v10OriginalShow();v10Render();v12Render()};
+
+
+// v1.2: independent altitude parsing; source data remains in the user's browser.
+function v12AscentFromFIT(ab){
+ // FIT record altitude: enhanced_altitude (field 78) or altitude (field 2), both scale 5 / offset 500.
+ const bytes=new Uint8Array(ab),dv=new DataView(ab);
+ if(bytes.length<14||String.fromCharCode(...bytes.slice(8,12))!=='.FIT')throw Error('FITヘッダーが不正です');
+ const end=bytes[0]+dv.getUint32(4,true);if(end>bytes.length)throw Error('FITデータが不完全です');
+ let pos=bytes[0],defs={},samples=[],lastTime=null;
+ function read(p,n,type,le){const base=type&31;if(n===2)return base===3?dv.getInt16(p,le):dv.getUint16(p,le);if(n===4)return base===5?dv.getInt32(p,le):base===8?dv.getFloat32(p,le):dv.getUint32(p,le);return null}
+ while(pos<end){const h=bytes[pos++],compressed=!!(h&128),local=compressed?(h>>5)&3:h&15;
+  if(!compressed&&(h&64)){if(pos+5>end)break;const le=bytes[pos+1]===0,global=dv.getUint16(pos+2,le),cnt=bytes[pos+4];pos+=5;const fs=[];for(let i=0;i<cnt;i++){fs.push([bytes[pos],bytes[pos+1],bytes[pos+2]]);pos+=3}if(h&32){const dev=bytes[pos++];pos+=dev*3}defs[local]={global,fs,le};continue}
+  const def=defs[local];if(!def)throw Error('FIT定義が見つかりません');const o={};for(const [num,size,type] of def.fs){if(pos+size>end)throw Error('FITレコードが不完全です');if(def.global===20&&(num===2||num===78||num===253))o[num]=read(pos,size,type,def.le);pos+=size}
+  if(def.global!==20)continue;
+  let t=Number.isFinite(o[253])&&o[253]!==4294967295?o[253]:null;
+  if(t===null&&compressed&&lastTime!==null){t=(lastTime&~31)+(h&31);if(t<lastTime)t+=32}if(t!==null)lastTime=t;
+  const raw=Number.isFinite(o[78])&&o[78]!==4294967295&&o[78]!==2147483647?o[78]:Number.isFinite(o[2])&&o[2]!==65535?o[2]:null;
+  if(t!==null&&raw!==null){const altitude=raw/5-500;if(Number.isFinite(altitude)&&altitude>-1000&&altitude<10000)samples.push([t,altitude])}
+ }
+ if(samples.length<2)throw Error('時刻付き標高データが不足しています');
+ const fmt=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'});
+ const out={};let anchor=samples[0][1],last=samples[0],accepted=0;
+ // Hysteresis: aggregate climbs >=3m across successive small changes, not only single-record jumps.
+ // Reset on recording gaps and implausible spikes; attribution uses the timestamp when climb is confirmed.
+ for(let i=1;i<samples.length;i++){
+  const cur=samples[i],dt=cur[0]-last[0],jump=Math.abs(cur[1]-last[1]);
+  if(dt<=0||dt>300||jump>Math.max(35,dt*4)){anchor=cur[1];last=cur;continue}
+  if(cur[1]<anchor){anchor=cur[1]}
+  else if(cur[1]-anchor>=3){const rise=cur[1]-anchor;const day=fmt.format(new Date((cur[0]+631065600)*1000));out[day]=(out[day]||0)+rise;accepted++;anchor=cur[1]}
+  last=cur;
+ }
+ // A flat activity can legitimately have zero gain; do not mark as missing.
+ for(const [t] of samples){const day=fmt.format(new Date((t+631065600)*1000));if(!(day in out))out[day]=0}
+ return out;
+}
+function v12Render(){
+ const cum=$('v12Cumulative'),asc=$('v12Ascent'),cp=$('v12CP'),svg=$('v12CumulativeChart');if(!cum||!asc||!cp||!svg)return;
+ cum.replaceChildren();asc.replaceChildren();cp.replaceChildren();svg.replaceChildren();
+ const grouped=new Map(),elev=new Map();let unknown=0;
+ for(const r of history){if(r.dailyBreakdown&&Object.keys(r.dailyBreakdown).length){for(const [d,v] of Object.entries(r.dailyBreakdown))if(/^\d{4}-\d{2}-\d{2}$/.test(d)&&Number.isFinite(v)&&v>=0)grouped.set(d,(grouped.get(d)||0)+v)}else unknown+=Number(r.distance)||0;
+ if(r.dailyAscent)for(const [d,v] of Object.entries(r.dailyAscent))if(Number.isFinite(v)&&v>=0)elev.set(d,(elev.get(d)||0)+v)}
+ const dates=[...grouped.keys()].sort();if(!dates.length){v10Text(cum,'p','日別内訳がありません。FITを再解析してください。');v10Text(asc,'p','標高内訳は未取得です。');v10Text(cp,'p','日別内訳がないため推定できません。');return}
+ let total=0;const series=dates.map(d=>{total+=grouped.get(d);return [d,total]});const last=series.at(-1);v10Text(cum,'p',`日別内訳からの累積：${last[1].toFixed(2)} km（未解析 ${unknown.toFixed(2)} km は除外）`);
+ const ns='http://www.w3.org/2000/svg',max=Math.max(1,last[1]),x=i=>25+(dates.length===1?140:i*280/(dates.length-1)),y=v=>125-v/max*105;
+ for(const [value,yy] of [[0,125],[max,20]]){let tx=document.createElementNS(ns,'text');tx.setAttribute('x','0');tx.setAttribute('y',String(yy));tx.textContent=value.toFixed(0);svg.append(tx)}
+ let line=document.createElementNS(ns,'polyline');line.setAttribute('points',series.map((p,i)=>`${x(i)},${y(p[1])}`).join(' '));svg.append(line);
+ series.forEach(([d,v],i)=>{let dot=document.createElementNS(ns,'circle');dot.setAttribute('cx',x(i));dot.setAttribute('cy',y(v));dot.setAttribute('r','3');svg.append(dot);if(i===0||i===dates.length-1){let label=document.createElementNS(ns,'text');label.setAttribute('x',x(i)-16);label.setAttribute('y','145');label.textContent=d.slice(5);svg.append(label)}});
+ if(!elev.size)v10Text(asc,'p','日別標高データは未取得です。元FITを再解析してください。');else for(const d of [...elev.keys()].sort()){let el=v10Text(asc,'div',`${d}：約${Math.round(elev.get(d))} m（GPS参考値）`);el.className='v12-row'}
+ // CP distances are the existing provisional equally spaced milestones; not GPS-verified.
+ const cpNames=['富山湾沿岸','北アルプス山域','中央アルプス山域','南アルプス山域','駿河湾沿岸'];
+ const goal=Math.max(1,Number($('goal').value)||415);const thresholds=[0,0.194,0.527,0.725,1];
+ for(let i=0;i<cpNames.length;i++){let at=goal*thresholds[i],hit=series.find(v=>v[1]>=at);let el=v10Text(cp,'div',`${cpNames[i]}（暫定 ${at.toFixed(1)}km）：${hit?hit[0]+'までに到達と推定':'未到達または内訳不足'}`);el.className='v12-row'}
+ if(unknown>0)v10Text(cp,'p','未解析活動があるため、通過日の推定は不完全です。');
+}
+
+batchRender();
+
+$('goal').oninput=show;show();
+</script><style>.diag-panel{background:#122638;border:1px solid #385164;border-radius:14px;padding:18px;margin:20px 0;color:#e9f3f7}.diag-panel h3{margin:0 0 12px}.diag-panel input{max-width:100%;font-size:15px}.diag-panel pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.65;color:#d7e5e9}.diag-panel .hint{font-size:13px;color:#b8c8d2}</style>
+<section class="diag-panel" id="fitDiagPanel"><h3>標高データ診断（v1.2.2）</h3><p class="hint">元のFITを選択して標高フィールドの有無・型・時刻・日別サンプル数を確認します。診断では保存済み距離・活動履歴を変更しません。</p><input type="file" id="fitDiagFile" accept=".fit"><pre id="fitDiagResult" aria-live="polite">未診断</pre></section>
+<script>
+(function(){
+const panel=document.getElementById('fitDiagPanel');const dashboard=document.getElementById('v11Reparse');if(dashboard){dashboard.closest('section')?.appendChild(panel)}
+function inspect(ab){
+ const b=new Uint8Array(ab),v=new DataView(ab),stat={records:0,recordMessages:0,altitude:0,enhanced:0,validAlt:0,validEnhanced:0,timestamps:0,withBoth:0,days:{},sizes:{},warnings:[]};
+ if(b.length<14||String.fromCharCode(...b.slice(8,12))!=='.FIT')throw Error('FIT形式ではありません');
+ const h=b[0],end=h+v.getUint32(4,true);if(h<12||end>b.length)throw Error('FITヘッダーまたはデータ長が不正です');
+ let pos=h,defs={},lastTimestamp=null;
+ function value(p,n,t,le){const base=t&31;if(n===1)return b[p];if(n===2)return base===3?v.getInt16(p,le):v.getUint16(p,le);if(n===4)return base===8?v.getFloat32(p,le):base===5?v.getInt32(p,le):v.getUint32(p,le);return null}
+ while(pos<end){let hdr=b[pos++],compressed=!!(hdr&128),local=compressed?(hdr>>5)&3:hdr&15;
+ if(!compressed&&(hdr&64)){if(pos+5>end)throw Error('定義メッセージが途中で終了');const le=b[pos+1]===0,global=v.getUint16(pos+2,le),count=b[pos+4];pos+=5;let fields=[];for(let i=0;i<count;i++){if(pos+3>end)throw Error('フィールド定義が途中で終了');fields.push([b[pos],b[pos+1],b[pos+2]]);pos+=3}if(hdr&32){let countDev=b[pos++];pos+=countDev*3}defs[local]={le,global,fields};continue}
+ const d=defs[local];if(!d)throw Error('データ定義が見つかりません');let obj={};for(const [num,size,type] of d.fields){if(pos+size>end)throw Error('FITデータが途中で終了');if(d.global===20&&[2,78,253].includes(num)) {stat.sizes[`${num} (${num===2?'altitude':num===78?'enhanced_altitude':'timestamp'})`]=`${size}byte / type ${type}`;obj[num]=value(pos,size,type,d.le)}pos+=size}stat.records++;
+ if(d.global!==20)continue;stat.recordMessages++;
+ if(Number.isFinite(obj[253])&&obj[253]!==0xffffffff)lastTimestamp=obj[253];else if(compressed&&lastTimestamp!==null){let candidate=(lastTimestamp&~31)+(hdr&31);if(candidate<lastTimestamp)candidate+=32;lastTimestamp=candidate}
+ const a=obj[2],e=obj[78];if(a!==undefined)stat.altitude++;if(e!==undefined)stat.enhanced++;
+ const goodA=Number.isFinite(a)&&a!==65535&&a!==32767,goodE=Number.isFinite(e)&&e!==4294967295&&e!==2147483647;
+ if(goodA)stat.validAlt++;if(goodE)stat.validEnhanced++;
+ if(lastTimestamp!==null){stat.timestamps++;let date=new Date((lastTimestamp+631065600)*1000);if(Number.isFinite(date.getTime())){let day=new Intl.DateTimeFormat('sv-SE',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).format(date);let x=stat.days[day]??(stat.days[day]={time:0,alt:0,enhanced:0});x.time++;if(goodA)x.alt++;if(goodE)x.enhanced++}}if(lastTimestamp!==null&&(goodA||goodE))stat.withBoth++;
+ }
+ if(!stat.recordMessages)stat.warnings.push('recordメッセージ（global 20）がありません');
+ if(!stat.validAlt&&!stat.validEnhanced)stat.warnings.push('有効な標高サンプルがありません。元FITの標高フィールド欠落、または未対応形式の可能性があります');
+ if(!stat.timestamps)stat.warnings.push('有効な時刻が取得できません');
+ if(stat.withBoth>=2&&!Object.keys(stat.days).length)stat.warnings.push('時刻の解釈を確認してください');
+ if(stat.withBoth>=2)stat.warnings.push('標高と時刻のサンプルは存在します。旧版の標高集計ロジック（差分閾値・時刻間隔・圧縮時刻・型の処理）が原因の可能性があります');
+ return stat;
+}
+document.getElementById('fitDiagFile').addEventListener('change',async e=>{const f=e.target.files[0];if(!f)return;const out=document.getElementById('fitDiagResult');out.textContent='診断中…';try{const r=inspect(await f.arrayBuffer());out.textContent=['ファイル：'+f.name,'FITレコードメッセージ：'+r.recordMessages,'altitudeフィールド：'+r.altitude+'件／有効 '+r.validAlt+'件','enhanced_altitudeフィールド：'+r.enhanced+'件／有効 '+r.validEnhanced+'件','時刻あり：'+r.timestamps+'件','時刻＋有効標高：'+r.withBoth+'件','フィールド型：'+JSON.stringify(r.sizes),'日別サンプル：'+JSON.stringify(r.days,null,2),'診断：'+(r.warnings.join(' ／ ')||'標高と時刻を確認できました')].join('\n')}catch(err){out.textContent='診断できません：'+err.message}finally{e.target.value=''}})
+})();
+</script><script>
+(function(){
+const byId=id=>document.getElementById(id), fmt=(n,d=2)=>Number(n).toFixed(d);
+function render(){
+ const records=Array.isArray(history)?history:[];const total=records.reduce((s,r)=>s+(Number(r.distance)||0),0),goal=Math.max(1,Number(byId('goal').value)||415),pct=Math.min(100,total/goal*100);
+ byId('v13km').textContent=fmt(total)+' km';byId('v13pct').textContent=fmt(pct,1)+'%';byId('v13remain').textContent=fmt(Math.max(0,goal-total))+' km';byId('v13progress').style.width=pct+'%';
+ const distance=new Map(),ascent=new Map();let unknown=0,unknownAsc=0;
+ for(const r of records){if(r.dailyBreakdown&&Object.keys(r.dailyBreakdown).length){for(const [date,val] of Object.entries(r.dailyBreakdown)){if(/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(val)&&val>=0)distance.set(date,(distance.get(date)||0)+val)}}else unknown+=Number(r.distance)||0;
+ if(r.dailyAscent&&Object.keys(r.dailyAscent).length){for(const [date,val] of Object.entries(r.dailyAscent)){if(/^\d{4}-\d{2}-\d{2}$/.test(date)&&Number.isFinite(val)&&val>=0)ascent.set(date,(ascent.get(date)||0)+val)}}else unknownAsc++}
+ const ascTotal=[...ascent.values()].reduce((a,b)=>a+b,0);byId('v13asc').textContent=ascent.size?Math.round(ascTotal).toLocaleString('ja-JP')+' m':'未取得';
+ const days=[...new Set([...distance.keys(),...ascent.keys()])].sort();const area=byId('v13days');area.replaceChildren();
+ if(!days.length){const p=document.createElement('p');p.textContent='日別データは未取得です。既存FITの日別内訳を再解析してください。';area.append(p)}else{const max=Math.max(1,...distance.values());for(const day of days.slice(-14)){const wrap=document.createElement('div'),label=document.createElement('strong');label.textContent=day+'　'+(distance.has(day)?fmt(distance.get(day))+' km':'距離未取得')+' ／ '+(ascent.has(day)?'上昇 約'+Math.round(ascent.get(day)).toLocaleString('ja-JP')+' m':'上昇未取得');wrap.append(label);const mini=document.createElement('div');mini.className='mini';const fill=document.createElement('div');fill.style.width=Math.min(100,(distance.get(day)||0)/max*100)+'%';mini.append(fill);wrap.append(mini);area.append(wrap)}}
+ const cp=byId('v13cp');const milestones=[['富山湾',0],['北アルプス山域',.194],['中央アルプス山域',.527],['南アルプス山域',.725],['駿河湾',1]];let next=milestones.find(([_,fraction])=>total<goal*fraction);cp.textContent=next?'次の参考地点：'+next[0]+' ／ 暫定残距離 '+fmt(goal*next[1]-total)+' km':'仮想ゴール到達（415km換算）';if(unknown>0)cp.textContent+=' ／ 日別未解析 '+fmt(unknown)+' km';
+ const input=byId('v13garmin'),output=byId('v13diff');const g=Number(input.value);if(input.value!==''&&Number.isFinite(g)&&g>0&&ascent.size){const delta=ascTotal-g;output.textContent='FIT参考値との差：'+(delta>=0?'+':'')+Math.round(delta).toLocaleString('ja-JP')+' m（Garmin基準 '+fmt(Math.abs(delta)/g*100,2)+'%）'}else output.textContent=ascent.size?'Garminの総上昇量を入力すると差を表示します。':'FIT標高データの再解析が必要です。';
+}
+const input=byId('v13garmin');try{input.value=localStorage.getItem('virtual_tjar_garmin_ascent_ref')||''}catch(e){}
+input.addEventListener('input',()=>{try{localStorage.setItem('virtual_tjar_garmin_ascent_ref',input.value)}catch(e){}render()});
+const originalShow=show;show=function(){originalShow();render()};render();
+})();
+</script></html>
